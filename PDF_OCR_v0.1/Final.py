@@ -3,12 +3,14 @@ import pytesseract
 import cv2
 from PIL import Image
 import os
+import re
+from pytesseract import Output
 
 #Creamos la carpeta temporal
 #wd = os.getcwd()
 # print ("El working directory que estoy usando es %s" % wd)
 
-proyecto = "C:/Users/34604/Documents/GitHub/PDF_OCR_v0.1"
+proyecto = "C:/Users/ggrana/PycharmProjects/PDF_OCR_v0.1"
 carpetatemp = "Tmp"
 path = os.path.join(proyecto, carpetatemp)
 
@@ -25,8 +27,8 @@ else:
 ### --> SIGUIENTE PASO <--- ###
 #De PDF a Imagen
 #Cargamos file y definimos ruta de salida(si va muy lento, mejor cambiar el formato a jpeg)
-file = "PDF/9456GRG.pdf"
-images = convert_from_path(file,poppler_path = r"C:\Program Files\poppler-0.68.0_x86\poppler-0.68.0\bin",output_folder="Tmp",fmt="png",output_file="")
+file = "PDF/1203HHW.pdf"
+images = convert_from_path(file,poppler_path = r"C:\Program Files\poppler-0.68.0\bin",output_folder="Tmp",fmt="png",output_file="")
 
 
 
@@ -38,14 +40,14 @@ im = Image.open(im_file)
 # im.save("TicketsRaw/girado2.png")
 angle = 270
 out = im.rotate(angle, expand=True)
-out.save('Temp/girado.png')
+out.save('Tmp/girado.png')
 
 
 
 
 ### --> SIGUIENTE PASO <--- ###
 #Sacamos el negativo de la nueva imagen para que Tesseract funcione mejor al leer el texto
-image1 = cv2.imread('Temp/girado.png')
+image1 = cv2.imread('Tmp/girado.png')
 
 # cv2.cvtColor para convertir a escala de grises
 img = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
@@ -73,20 +75,40 @@ if cv2.waitKey(0) & 0xff == 27:
 ### --> SIGUIENTE PASO <--- ###
 #Extraemos el texto
 image = cv2.imread('Tmp/girado.png',0)
-text = pytesseract.image_to_string(image)
-print(text)
+textdata = pytesseract.image_to_data(image)
+textstring = pytesseract.image_to_string(image)
+print(textdata)
 
+####TEST
+
+# date_pattern = '^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/(19|20)\d\d$'
+# print(re.match(date_pattern,textdata))
+
+
+# d = pytesseract.image_to_data(img, output_type=Output.DICT)
+# keys = list(d.keys())
+# gasolinatipo = '([A-Z][A-Z][A-Z][A-Z][A-Z][T][A][R])|([A-Z][A-Z][A-Z][A-Z][A-Z][U][E])'
+#
+# n_boxes = len(d['text'])
+# for i in range(n_boxes):
+#     if float(d['conf'][i]) > 60:
+#     	if re.match(gasolinatipo, d['text'][i]):
+# 	        (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
+# 	        img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+#
+# cv2.imshow('img', img)
+# cv2.waitKey(0)
 
 
 # ### --> SIGUIENTE PASO <--- ###
 # #Eliminamos la carpeta temporal
-proyecto = "C:/Users/34604/Documents/GitHub/PDF_OCR_v0.1"
-carpetatemp = "Tmp"
-path = os.path.join(proyecto, carpetatemp)
-
-try:
-    os.rmdir(path)
-except OSError:
-    print ("Deletion of the directory %s failed" % path)
-else:
-    print ("Successfully deleted the directory %s" % path)
+# proyecto = "C:/Users/34604/Documents/GitHub/PDF_OCR_v0.1"
+# carpetatemp = "Tmp"
+# path = os.path.join(proyecto, carpetatemp)
+#
+# try:
+#     os.rmdir(path)
+# except OSError:
+#     print ("Deletion of the directory %s failed" % path)
+# else:
+#     print ("Successfully deleted the directory %s" % path)
